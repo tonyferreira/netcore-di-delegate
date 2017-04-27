@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace NetCoreDelegateInjection
@@ -9,10 +10,10 @@ namespace NetCoreDelegateInjection
         {
             try {
 
-               Action<string> log = (message) => Console.WriteLine(message);
+               Action<string> callback = (message) => Console.WriteLine(message);
 
                 var serviceProvider = new ServiceCollection()
-                                            .AddSingleton(log)
+                                            .AddSingleton(callback)
                                             .AddTransient(typeof(Person))
                                             .BuildServiceProvider();
 
@@ -31,12 +32,13 @@ namespace NetCoreDelegateInjection
 
     class Person {
 
-        private Action<string> log;
-        public Person(Action<string> log){
-            this.log = log;
+        private Action<string> callback;
+        public Person(Action<string> callback) {
+            this.callback = callback;
         }
-        public void LogSomething() {
-            log("Something");
+        public async void LogSomething() {
+            await Task.Delay(3000);
+            this.callback("Callback executed");
         }
     }
 }
